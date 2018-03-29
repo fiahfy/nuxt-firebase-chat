@@ -10,7 +10,7 @@ module.exports = {
       { hid: 'description', name: 'description', content: 'Nuxt.js project' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/sample-apps/chat/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/sandbox/chat/favicon.ico' }
     ]
   },
   /*
@@ -39,6 +39,6 @@ module.exports = {
   ** Router configuration
   */
   router: {
-    base: '/sample-apps/chat/'
+    base: '/sandbox/chat/'
   }
 }
