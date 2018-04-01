@@ -28,6 +28,35 @@ import AppLogo from '~/components/AppLogo.vue'
 export default {
   components: {
     AppLogo
+  },
+  async mounted () {
+    const citiesRef = this.$db.collection("cities")
+
+    await citiesRef.doc("SF").set({
+      name: "San Francisco", state: "CA", country: "USA",
+      capital: false, population: 860000
+    })
+    await citiesRef.doc("LA").set({
+      name: "Los Angeles", state: "CA", country: "USA",
+      capital: false, population: 3900000
+    })
+    await citiesRef.doc("DC").set({
+      name: "Washington, D.C.", state: null, country: "USA",
+      capital: true, population: 680000
+    })
+    await citiesRef.doc("TOK").set({
+      name: "Tokyo", state: null, country: "Japan",
+      capital: true, population: 9000000
+    })
+    await citiesRef.doc("BJ").set({
+      name: "Beijing", state: null, country: "China",
+      capital: true, population: 21500000
+    })
+
+    const docRef = this.$db.collection("cities").doc("SF")
+
+    const doc = await docRef.get()
+    console.log(doc.data())
   }
 }
 </script>

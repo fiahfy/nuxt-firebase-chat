@@ -36,9 +36,25 @@ module.exports = {
     }
   },
   /*
+  ** Mode
+  */
+  mode: 'spa',
+  /*
   ** Router configuration
   */
   router: {
     base: '/sandbox/chat/'
-  }
+  },
+  /*
+  ** Plugins
+  */
+  plugins: [
+    '~/plugins/firebase'
+  ],
+  /*
+  ** Modules
+  */
+  modules: [
+    '@nuxtjs/dotenv'
+  ]
 }
