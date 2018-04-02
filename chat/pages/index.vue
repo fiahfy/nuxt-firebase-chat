@@ -1,24 +1,10 @@
 <template>
-  <section class="container">
-    <div>
-      <app-logo/>
-      <h1 class="title">
-        chat
-      </h1>
-      <h2 class="subtitle">
-        Nuxt.js project
-      </h2>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          class="button--green">Documentation</a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          class="button--grey">GitHub</a>
-      </div>
+  <section>
+    <div ref="message-container" class="message">
+      <div class="offset" />
+      <p v-for="message of messages.slice().reverse()" :key="message.id">{{ message.message }}</p>
     </div>
+    <input type="text" @keyup="keyup" />
   </section>
 </template>
 
@@ -29,65 +15,63 @@ export default {
   components: {
     AppLogo
   },
+  data () {
+    return {
+      messages: []
+    }
+  },
   async mounted () {
-    const citiesRef = this.$db.collection("cities")
-
-    await citiesRef.doc("SF").set({
-      name: "San Francisco", state: "CA", country: "USA",
-      capital: false, population: 860000
+    this.unsubscribe = this.$db.collection('messages').orderBy('created_at', 'desc').onSnapshot((snapshot) => {
+        console.log(snapshot)
+      let messages = []
+      snapshot.docChanges.forEach((change) => {
+        console.log(change.doc.data())
+        if (change.type === 'added') {
+          messages.push({
+            id: change.doc.id, ...change.doc.data()
+          })
+        }
+      })
+      this.messages = [...messages, ...this.messages]
+      this.$nextTick(() => {
+        const container = this.$refs['message-container']
+        container.scrollTop = container.scrollHeight
+      })
     })
-    await citiesRef.doc("LA").set({
-      name: "Los Angeles", state: "CA", country: "USA",
-      capital: false, population: 3900000
-    })
-    await citiesRef.doc("DC").set({
-      name: "Washington, D.C.", state: null, country: "USA",
-      capital: true, population: 680000
-    })
-    await citiesRef.doc("TOK").set({
-      name: "Tokyo", state: null, country: "Japan",
-      capital: true, population: 9000000
-    })
-    await citiesRef.doc("BJ").set({
-      name: "Beijing", state: null, country: "China",
-      capital: true, population: 21500000
-    })
-
-    const docRef = this.$db.collection("cities").doc("SF")
-
-    const doc = await docRef.get()
-    console.log(doc.data())
+  },
+  beforeDestroy () {
+    this.unsubscribe()
+  },
+  methods: {
+    async keyup (e) {
+      if (e.keyCode === 13) {
+        try {
+          await this.$db.collection('messages').add({
+            message: e.target.value,
+            created_at: new Date
+          })
+          e.target.value = ''
+        } catch (e) {
+          throw e
+        }
+      }
+    }
   }
 }
 </script>
 
 <style>
-.container {
-  min-height: 100vh;
+section {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+  flex-direction: column;
+  height: 100%;
 }
-
-.title {
-  font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* 1 */
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
+.message {
+  flex: 1;
+  overflow: auto;
 }
-
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
-
-.links {
-  padding-top: 15px;
+.message>p {
+  padding: 8px;
+  height: 100px;
 }
 </style>
