@@ -1,23 +1,26 @@
 <template>
   <section>
-    <div ref="message-container" class="message">
+    <div ref="message-container" class="message-container">
       <div class="offset" />
-      <p v-for="message of messages.slice().reverse()" :key="message.id">{{ message.message }}</p>
+      <message v-for="message of messages.slice().reverse()" :key="message.id" :message="message" />
     </div>
-    <input type="text" @keyup="keyup" />
+    <md-field>
+      <md-textarea v-model="message" md-autogrow placeholder="Input message" @keydown="keydown"></md-textarea>
+    </md-field>
   </section>
 </template>
 
 <script>
-import AppLogo from '~/components/AppLogo.vue'
+import Message from '~/components/Message.vue'
 
 export default {
   components: {
-    AppLogo
+    Message
   },
   data () {
     return {
-      messages: []
+      messages: [],
+      message: ''
     }
   },
   async mounted () {
@@ -43,14 +46,19 @@ export default {
     this.unsubscribe()
   },
   methods: {
-    async keyup (e) {
-      if (e.keyCode === 13) {
+    async keydown (e) {
+      if (e.keyCode === 13 && e.shiftKey) {
+        e.preventDefault()
+        e.stopPropagation()
+        if (!this.message.length) {
+          return
+        }
         try {
           await this.$db.collection('messages').add({
-            message: e.target.value,
+            message: this.message,
             created_at: new Date
           })
-          e.target.value = ''
+          this.message = ''
         } catch (e) {
           throw e
         }
@@ -60,18 +68,17 @@ export default {
 }
 </script>
 
-<style>
+<style scoped lang="scss">
 section {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
-.message {
+.message-container {
   flex: 1;
   overflow: auto;
-}
-.message>p {
-  padding: 8px;
-  height: 100px;
+  .message {
+    margin: 15px 0;
+  }
 }
 </style>

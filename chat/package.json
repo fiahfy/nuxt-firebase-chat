@@ -15,7 +15,10 @@
   "dependencies": {
     "@nuxtjs/dotenv": "^1.1.1",
     "firebase": "^4.12.1",
-    "nuxt": "^1.0.0"
+    "node-sass": "^4.8.3",
+    "nuxt": "^1.0.0",
+    "sass-loader": "^6.0.7",
+    "vue-material": "^1.0.0-beta-7"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.1",
