@@ -11,9 +11,8 @@ const firebasePlugin = {
       projectId: process.env.PROJECT_ID,
       storageBucket: process.env.STORAGE_BUCKET
     })
-    const db = firebase.firestore()
-    Vue.prototype.$firebase = firebase
-    Vue.prototype.$db = db
+    Vue.prototype.$db = firebase.firestore()
+    Vue.prototype.$auth = firebase.auth()
   }
 }
 
@@ -22,12 +21,12 @@ Vue.use(firebasePlugin)
 export default (ctx) => {
   const { app, store } = ctx
 
-  app.$firebase = Vue.prototype.$firebase
   app.$db = Vue.prototype.$db
-  ctx.$firebase = Vue.prototype.$firebase
+  app.$auth = Vue.prototype.$auth
   ctx.$db = Vue.prototype.$db
+  ctx.$auth = Vue.prototype.$auth
   if (store) {
-    store.$firebase = Vue.prototype.$firebase
     store.$db = Vue.prototype.$db
+    store.$auth = Vue.prototype.$auth
   }
 }

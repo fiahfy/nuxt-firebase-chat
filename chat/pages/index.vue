@@ -27,6 +27,9 @@ export default {
     }
   },
   async mounted () {
+    const r = await this.$auth.signInAnonymouslyAndRetrieveData()
+    console.log(r.user.uid)
+
     this.unsubscribe = this.$db.collection('messages').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
       this.loading = false
       this.messages = [
