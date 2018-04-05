@@ -6,7 +6,7 @@ export const state = () => ({
 
 export const actions = {
   async signIn ({ commit }) {
-    const provider = new firebase.auth.GoogleAuthProvider()
+    const provider = new firebase.auth.GithubAuthProvider()
     await this.$auth.signInWithPopup(provider)
   },
   async signOut () {
