@@ -1,7 +1,24 @@
 <template>
   <md-app md-waterfall md-mode="fixed">
     <md-app-toolbar class="md-primary">
-      <span class="md-title">Chat</span>
+      <div class="md-toolbar-section-start">
+        <span class="md-title">Chat</span>
+      </div>
+      <div class="md-toolbar-section-end">
+        <template v-if="isSignedIn">
+          <md-menu md-align-trigger>
+            <md-avatar md-menu-trigger>
+              <img :src="user.photoUrl" alt="avatar">
+            </md-avatar>
+            <md-menu-content>
+              <md-menu-item @click="signOut">
+                Sign out
+              </md-menu-item>
+            </md-menu-content>
+          </md-menu>
+        </template>
+        <md-button v-else class="md-primary" @click="signIn">Sign in</md-button>
+      </div>
     </md-app-toolbar>
 
     <md-app-drawer md-permanent="full">
@@ -37,6 +54,27 @@
     </md-app-content>
   </md-app>
 </template>
+
+<script>
+import { mapActions, mapGetters, mapState } from 'vuex'
+
+export default {
+  computed: {
+    ...mapState({
+      user: 'user'
+    }),
+    ...mapGetters({
+      isSignedIn: 'isSignedIn'
+    })
+  },
+  methods: {
+    ...mapActions({
+      signIn: 'signIn',
+      signOut: 'signOut'
+    })
+  }
+}
+</script>
 
 <style>
 html {

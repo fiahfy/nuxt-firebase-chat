@@ -29,4 +29,16 @@ export default (ctx) => {
     store.$db = Vue.prototype.$db
     store.$auth = Vue.prototype.$auth
   }
+
+  app.$auth.onAuthStateChanged(function(currentUser) {
+    let user = null
+    if (currentUser) {
+      user = {
+        uid: currentUser.uid,
+        name: currentUser.displayName,
+        photoUrl: currentUser.photoURL
+      }
+    }
+    store.commit('setUser', { user })
+  })
 }

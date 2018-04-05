@@ -1,10 +1,13 @@
 <template>
   <section>
-    <div ref="message-container" class="message-container">
+    <div ref="messages" class="messages">
       <div class="spinner" v-if="loading">
         <md-progress-spinner md-mode="indeterminate" />
       </div>
-      <message v-else v-for="message of messages.slice().reverse()" :key="message.id" :message="message" />
+      <div v-else v-for="message of messages.slice().reverse()" :key="message.id">
+        <message :message="message" />
+        <md-divider />
+      </div>
     </div>
     <md-field>
       <md-textarea v-model="message" md-autogrow placeholder="Message..." @keydown="keydown"></md-textarea>
@@ -13,6 +16,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import Message from '~/components/Message.vue'
 
 export default {
@@ -27,9 +31,6 @@ export default {
     }
   },
   async mounted () {
-    const r = await this.$auth.signInAnonymouslyAndRetrieveData()
-    console.log(r.user.uid)
-
     this.unsubscribe = this.$db.collection('messages').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
       this.loading = false
       this.messages = [
@@ -44,8 +45,8 @@ export default {
         ...this.messages
       ]
       this.$nextTick(() => {
-        const container = this.$refs['message-container']
-        container.scrollTop = container.scrollHeight
+        const el = this.$refs['messages']
+        el.scrollTop = el.scrollHeight
       })
     })
   },
@@ -61,16 +62,16 @@ export default {
           return
         }
         try {
-          await this.$db.collection('messages').add({
-            message: this.message,
-            createdAt: new Date
-          })
+          this.sendMessage({ message: this.message })
           this.message = ''
         } catch (e) {
           throw e
         }
       }
-    }
+    },
+    ...mapActions({
+      sendMessage: 'sendMessage'
+    })
   }
 }
 </script>
@@ -81,7 +82,7 @@ section {
   flex-direction: column;
   height: 100%;
 }
-.message-container {
+.messages {
   flex: 1;
   overflow: auto;
   .message {

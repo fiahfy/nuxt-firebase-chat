@@ -1,9 +1,11 @@
 <template>
   <md-content class="message">
-    <md-avatar class="md-avatar-icon">A</md-avatar>
+    <md-avatar>
+      <img :src="message.senderPhotoUrl" alt="avatar">
+    </md-avatar>
     <div class="container">
       <div>
-        <span class="md-body-2">Ada Lovelace</span>
+        <span class="md-body-2">{{ message.senderName }}</span>
         <span class="md-caption">{{ datetime }}</span>
       </div>
       <p class="md-body-1">{{ message.message }}</p>
