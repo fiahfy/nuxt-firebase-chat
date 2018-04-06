@@ -27,11 +27,11 @@
       </md-toolbar>
 
       <md-list>
-        <md-list-item>
-          <nuxt-link class="md-list-item-text" to="/rooms/?id=1">Room 1</nuxt-link>
+        <md-list-item @click="createRoom">
+          <span class="md-list-item-text">New room</span>
         </md-list-item>
-        <md-list-item>
-          <nuxt-link class="md-list-item-text" to="/rooms/?id=2">Room 2</nuxt-link>
+        <md-list-item v-for="room of rooms" :key="room.id" @click="(e) => goRoom(room.id)">
+          <span class="md-list-item-text">{{ room.id }}</span>
         </md-list-item>
         <md-list-item>
           <nuxt-link class="md-list-item-text" to="/">Top</nuxt-link>
@@ -49,18 +49,27 @@
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 export default {
+  async mounted () {
+    await this.fetchRooms()
+  },
   computed: {
     ...mapState({
-      user: 'user'
+      user: 'user',
+      rooms: 'rooms'
     }),
     ...mapGetters({
       isSignedIn: 'isSignedIn'
     })
   },
   methods: {
+    goRoom (id) {
+      this.$router.push(`/rooms/?id=${id}`)
+    },
     ...mapActions({
       signIn: 'signIn',
-      signOut: 'signOut'
+      signOut: 'signOut',
+      fetchRooms: 'fetchRooms',
+      createRoom: 'createRoom'
     })
   }
 }

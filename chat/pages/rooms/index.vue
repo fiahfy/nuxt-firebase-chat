@@ -26,7 +26,7 @@ export default {
   watchQuery: ['id'],
   data () {
     return {
-      id: 0,
+      id: '',
       loading: true,
       messages: [],
       message: ''
@@ -35,11 +35,11 @@ export default {
   asyncData({ query }) {
     console.log('async')
     return {
-      id: +query.id
+      id: query.id
     }
   },
   async mounted () {
-    this.load()
+    await this.load()
   },
   beforeDestroy () {
     if (this.unsubscribe) {
@@ -52,7 +52,7 @@ export default {
         this.unsubscribe()
       }
       // await this.$db.collection('rooms').doc(this.id).set({})
-      this.unsubscribe = this.$db.collection('rooms').doc(String(this.id)).collection('messages').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
+      this.unsubscribe = this.$db.collection('rooms').doc(this.id).collection('messages').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
         this.loading = false
         this.messages = [
           ...snapshot.docChanges.reduce((carry, change) => {
@@ -79,7 +79,7 @@ export default {
           return
         }
         try {
-          this.sendMessage({ roomId: this.id, message: this.message })
+          this.createMessage({ roomId: this.id, message: this.message })
           this.message = ''
         } catch (e) {
           throw e
@@ -87,7 +87,7 @@ export default {
       }
     },
     ...mapActions({
-      sendMessage: 'sendMessage'
+      createMessage: 'createMessage'
     })
   },
   watch: {
