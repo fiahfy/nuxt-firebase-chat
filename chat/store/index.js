@@ -12,8 +12,8 @@ export const actions = {
   async signOut () {
     await this.$auth.signOut()
   },
-  async sendMessage ({ state }, { message }) {
-    await this.$db.collection('messages').add({
+  async sendMessage ({ state }, { roomId, message }) {
+    await this.$db.collection('rooms').doc(String(roomId)).collection('messages').add({
       message,
       createdAt: new Date,
       sender: state.user.uid,
