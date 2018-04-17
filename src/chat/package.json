@@ -8,7 +8,7 @@
     "dev": "nuxt",
     "build": "nuxt build",
     "start": "nuxt start",
-    "generate": "nuxt generate && mkdir -p ../gh-pages/ && rm -rf ../gh-pages/chat/ && cp -r dist/ ../gh-pages/chat/",
+    "generate": "nuxt generate && rm -rf ../../public/chat/ && cp -r dist/ ../../public/chat/",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "precommit": "npm run lint"
   },

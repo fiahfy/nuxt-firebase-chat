@@ -18,7 +18,7 @@ const firebasePlugin = {
 
 Vue.use(firebasePlugin)
 
-export default (ctx) => {
+export default async (ctx) => {
   const { app, store } = ctx
 
   app.$db = Vue.prototype.$db
@@ -30,15 +30,18 @@ export default (ctx) => {
     store.$auth = Vue.prototype.$auth
   }
 
-  app.$auth.onAuthStateChanged(function(currentUser) {
-    let user = null
-    if (currentUser) {
-      user = {
-        uid: currentUser.uid,
-        name: currentUser.displayName,
-        photoUrl: currentUser.photoURL
+  await new Promise((resolve) => {
+    app.$auth.onAuthStateChanged(function(currentUser) {
+      let user = null
+      if (currentUser) {
+        user = {
+          uid: currentUser.uid,
+          name: currentUser.displayName,
+          photoUrl: currentUser.photoURL
+        }
       }
-    }
-    store.commit('setUser', { user })
+      store.commit('setUser', { user })
+      resolve()
+    })
   })
 }

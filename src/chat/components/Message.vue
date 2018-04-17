@@ -1,7 +1,15 @@
 <template>
   <md-content class="message">
     <md-avatar>
-      <img :src="message.senderPhotoUrl" alt="avatar">
+      <img
+        v-if="message.senderPhotoUrl"
+        :src="message.senderPhotoUrl"
+        :alt="message.senderName"
+      >
+      <md-icon
+        v-else
+        class="md-size-2x"
+      >account_circle</md-icon>
     </md-avatar>
     <div class="container">
       <div>
