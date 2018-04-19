@@ -1,31 +1,32 @@
 <template>
-  <md-app
-    md-waterfall
-    md-mode="fixed"
-  >
-    <md-app-toolbar class="md-primary">
-      <div class="md-toolbar-section-start">
-        <template v-if="hasDrawer">
-          <md-button
-            class="md-icon-button menu"
-            @click="active = !active"
-          >
-            <md-icon>menu</md-icon>
-          </md-button>
-          <span class="md-title">
-            <slot name="title" />
-          </span>
-        </template>
-        <template v-else>
-          <md-button
-            class="md-icon-button"
-            to="/"
-          >
-            <md-icon>chat</md-icon>
-          </md-button>
-          <span class="md-title">Chat</span>
-        </template>
-      </div>
+  <v-app>
+    <v-navigation-drawer
+      v-if="hasDrawer"
+      v-model="active"
+      fixed
+      clipped
+      app
+    >
+      <slot name="drawer" />
+    </v-navigation-drawer>
+
+    <v-toolbar
+      color="red"
+      dark
+      dense
+      fixed
+      clipped-left
+      app
+    >
+      <v-toolbar-side-icon
+        v-if="hasDrawer"
+        @click.stop="active = !active"
+      />
+      <v-toolbar-title class="mr-5 align-center">
+        <span class="title">Chat</span>
+      </v-toolbar-title>
+      <v-spacer />
+
       <div class="md-toolbar-section-end">
         <template v-if="isSignedIn">
           <md-button @click="goRooms">Rooms</md-button>
@@ -55,20 +56,15 @@
           to="/login"
         >Sign in</md-button>
       </div>
-    </md-app-toolbar>
 
-    <md-app-drawer
-      v-if="hasDrawer"
-      :md-active.sync="active"
-      md-permanent="full"
-    >
-      <slot name="drawer" />
-    </md-app-drawer>
+    </v-toolbar>
 
-    <md-app-content>
-      <slot name="content" />
-    </md-app-content>
-  </md-app>
+    <v-content>
+      <v-container fill-height>
+        <slot name="content" />
+      </v-container>
+    </v-content>
+  </v-app>
 </template>
 
 <script>
@@ -105,28 +101,3 @@ export default {
   }
 }
 </script>
-
-<style scoped lang="scss">
-@import "~vue-material/src/components/MdLayout/mixins.scss";
-
-.md-app {
-  height: 100%;
-  .md-toolbar-section-start {
-    overflow: hidden;
-    .menu {
-      display: none;
-      @include md-layout-xsmall {
-        display: inline-block;
-      }
-    }
-  }
-  .md-app-drawer {
-    display: flex;
-    flex-direction: column;
-    width: 230px;
-  }
-  .md-app-content {
-    padding: 0;
-  }
-}
-</style>

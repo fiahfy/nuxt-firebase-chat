@@ -57,6 +57,7 @@ module.exports = {
   ** Modules
   */
   modules: [
-    '@nuxtjs/dotenv'
+    '@nuxtjs/dotenv',
+    '@nuxtjs/vuetify'
   ]
 }
