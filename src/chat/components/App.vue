@@ -11,7 +11,7 @@
     </v-navigation-drawer>
 
     <v-toolbar
-      color="red"
+      color="blue"
       dark
       dense
       fixed
@@ -27,35 +27,38 @@
       </v-toolbar-title>
       <v-spacer />
 
-      <div class="md-toolbar-section-end">
-        <template v-if="isSignedIn">
-          <md-button @click="goRooms">Rooms</md-button>
-          <md-menu md-align-trigger>
-            <md-avatar md-menu-trigger>
-              <md-ripple>
-                <img
-                  v-if="user.photoUrl"
-                  :src="user.photoUrl"
-                  alt="menu"
-                >
-                <md-icon
-                  v-else
-                  class="md-size-2x"
-                >account_circle</md-icon>
-              </md-ripple>
-            </md-avatar>
-            <md-menu-content>
-              <md-menu-item @click="logout">
-                Sign out
-              </md-menu-item>
-            </md-menu-content>
-          </md-menu>
-        </template>
-        <md-button
-          v-else
-          to="/login"
-        >Sign in</md-button>
-      </div>
+      <template v-if="isSignedIn">
+        <v-btn
+          flat
+          to="/rooms"
+        >Rooms</v-btn>
+        <v-menu
+          bottom
+          left
+        >
+          <v-avatar
+            slot="activator"
+            size="32"
+          >
+            <img
+              v-if="user.photoUrl"
+              :src="user.photoUrl"
+              alt="user.name"
+            >
+            <v-icon v-else>account_circle</v-icon>
+          </v-avatar>
+          <v-list>
+            <v-list-tile @click="logout">
+              <v-list-tile-title>Sign out</v-list-tile-title>
+            </v-list-tile>
+          </v-list>
+        </v-menu>
+      </template>
+      <v-btn
+        v-else
+        flat
+        to="/login"
+      >Sign in</v-btn>
 
     </v-toolbar>
 
@@ -88,9 +91,6 @@ export default {
     })
   },
   methods: {
-    goRooms  () {
-      this.$router.push('/rooms')
-    },
     async logout () {
       await this.signOut()
       this.$router.push('/login')

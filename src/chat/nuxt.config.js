@@ -50,8 +50,7 @@ module.exports = {
   ** Plugins
   */
   plugins: [
-    '~/plugins/firebase',
-    '~/plugins/vue-material'
+    '~/plugins/firebase'
   ],
   /*
   ** Modules

@@ -1,6 +1,8 @@
 <template>
   <app>
-    <div slot="content">settings</div>
+    <div slot="content">
+      Settings
+    </div>
   </app>
 </template>
 
