@@ -1,63 +1,70 @@
 <template>
-  <div class="md-layout md-alignment-center-center">
-    <div class="md-layout-item md-xsmall-size-90">
-      <md-card>
-        <md-card-header>
-          <div class="md-title">Sign up to Chat</div>
-        </md-card-header>
-
-        <form @submit.prevent="signUp">
-          <md-card-content>
-            <md-field>
-              <label for="username">Username</label>
-              <md-input
-                v-model="form.username"
-                :disabled="sending"
-                type="text"
-                name="username"
-                autocomplete="username"
+  <v-app>
+    <v-content>
+      <v-container
+        fluid
+        fill-height
+      >
+        <v-layout
+          align-center
+          justify-center
+        >
+          <v-flex
+            xs12
+            sm8
+            md4
+          >
+            <v-card>
+              <v-card-title primary-title>Sign up to Chat</v-card-title>
+              <v-card-text>
+                <v-form
+                  ref="form"
+                  v-model="valid"
+                  lazy-validation
+                  @submit.prevent="send"
+                >
+                  <v-text-field
+                    v-model="form.username"
+                    :rules="[() => form.username.length > 0 || 'This field is required']"
+                    required
+                    type="text"
+                    label="Username"
+                  />
+                  <v-text-field
+                    v-model="form.email"
+                    :rules="[() => form.email.length > 0 || 'This field is required']"
+                    required
+                    type="email"
+                    label="Email"
+                  />
+                  <v-text-field
+                    v-model="form.password"
+                    :rules="[() => form.password.length > 0 || 'This field is required']"
+                    required
+                    label="Password"
+                    type="password"
+                  />
+                </v-form>
+              </v-card-text>
+              <v-card-actions>
+                <v-btn
+                  :disabled="sending || !valid"
+                  block
+                  color="primary"
+                  @click="submit"
+                >Sign up</v-btn>
+              </v-card-actions>
+              <v-progress-linear
+                v-if="sending"
+                :indeterminate="true"
               />
-            </md-field>
-            <md-field>
-              <label for="email">Email</label>
-              <md-input
-                v-model="form.email"
-                :disabled="sending"
-                type="email"
-                name="email"
-                autocomplete="email"
-              />
-            </md-field>
-            <md-field>
-              <label for="email">Password</label>
-              <md-input
-                v-model="form.password"
-                :disabled="sending"
-                type="password"
-                name="password"
-                autocomplete="current-password"
-              />
-            </md-field>
-          </md-card-content>
-
-          <md-card-actions>
-            <md-button
-              :disabled="sending"
-              type="submit"
-              class="md-raised md-primary"
-            >Sign up</md-button>
-          </md-card-actions>
-        </form>
-
-        <md-progress-bar
-          v-if="sending"
-          md-mode="indeterminate"
-        />
-      </md-card>
-
-      <md-snackbar :md-active.sync="active">{{ message }}</md-snackbar>
-    </div>
-  </div>
+              <v-snackbar v-model="snackbar.active">{{ snackbar.text }}</v-snackbar>
+            </v-card>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-content>
+  </v-app>
 </template>
 
 <script>
@@ -67,25 +74,31 @@ export default {
   data () {
     return {
       form: {
-        email: null,
-        password: null,
-        username: null
+        username: '',
+        email: '',
+        password: ''
       },
-      sending: false,
-      active: false,
-      message: null
+      snackbar: {
+        active: false,
+        text: ''
+      },
+      valid: true,
+      sending: false
     }
   },
   methods: {
-    async signUp () {
+    async submit () {
+      if (!this.$refs.form.validate()) {
+        return
+      }
       this.sending = true
       try {
         await this.signUpWithEmailAndPassword({ ...this.form })
         this.$router.push('/rooms')
       } catch (e) {
+        this.snackbar.active = true
+        this.snackbar.text = e.message
         this.sending = false
-        this.active = true
-        this.message = e.message
       }
     },
     ...mapActions({
@@ -96,19 +109,11 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.md-layout {
-  height: 100%;
-  .md-layout-item {
-    max-width: 380px;
-    .md-button {
-      width: 100%;
-    }
-    .md-progress-bar {
-      position: absolute;
-      top: 0;
-      right: 0;
-      left: 0;
-    }
-  }
+.progress-linear {
+  left: 0;
+  margin: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 </style>

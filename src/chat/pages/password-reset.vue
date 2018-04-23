@@ -27,6 +27,7 @@
                     v-model="form.email"
                     :rules="[() => form.email.length > 0 || 'This field is required']"
                     required
+                    type="email"
                     label="Email"
                   />
                 </v-form>
@@ -43,7 +44,7 @@
                 v-if="sending"
                 :indeterminate="true"
               />
-              <v-snackbar v-model="snackbar.activate">{{ snackbar.text }}</v-snackbar>
+              <v-snackbar v-model="snackbar.active">{{ snackbar.text }}</v-snackbar>
             </v-card>
           </v-flex>
         </v-layout>
@@ -62,7 +63,7 @@ export default {
         email: ''
       },
       snackbar: {
-        activate: false,
+        active: false,
         text: ''
       },
       valid: true,
@@ -81,8 +82,8 @@ export default {
       } catch (e) {
         this.snackbar.text = e.message
       }
+      this.snackbar.active = true
       this.sending = false
-      this.snackbar.activate = true
     },
     ...mapActions({
       sendPasswordResetEmail: 'sendPasswordResetEmail'
