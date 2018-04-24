@@ -21,7 +21,6 @@
                   ref="form"
                   v-model="valid"
                   lazy-validation
-                  @submit.prevent="send"
                 >
                   <v-text-field
                     v-model="form.username"

@@ -22,9 +22,21 @@
         v-if="hasDrawer"
         @click.stop="active = !active"
       />
+
+      <v-btn
+        flat
+        icon
+        color="white"
+        class="mx-3"
+        @click="goTop()"
+      >
+        <v-icon>chat</v-icon>
+      </v-btn>
+
       <v-toolbar-title class="mr-5 align-center">
         <span class="title">Chat</span>
       </v-toolbar-title>
+
       <v-spacer />
 
       <template v-if="isSignedIn">
@@ -59,7 +71,6 @@
         flat
         to="/login"
       >Sign in</v-btn>
-
     </v-toolbar>
 
     <v-content>
@@ -91,6 +102,9 @@ export default {
     })
   },
   methods: {
+    goTop () {
+      this.$router.push('/')
+    },
     async logout () {
       await this.signOut()
       this.$router.push('/login')
