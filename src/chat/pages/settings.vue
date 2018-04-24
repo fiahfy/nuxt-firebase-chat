@@ -1,8 +1,11 @@
 <template>
   <app>
-    <div slot="content">
+    <v-container
+      slot="content"
+      fill-height
+    >
       Settings
-    </div>
+    </v-container>
   </app>
 </template>
 

@@ -5,47 +5,75 @@
     </template>
 
     <template slot="drawer">
-      <md-toolbar
-        class="md-primary"
-        md-elevation="0"
+      <v-list dense>
+        <v-subheader class="mt-3 grey--text text--darken-1">ROOMS</v-subheader>
+        <v-list>
+          <v-list-tile
+            v-for="room in rooms"
+            :key="room.id"
+            :to="`/rooms?id=${room.id}`"
+          >
+            <v-list-tile-title v-text="room.name" />
+          </v-list-tile>
+        </v-list>
+        <v-list-tile
+          class="mt-3"
+          @click="dialog = true"
+        >
+          <v-list-tile-action>
+            <v-icon color="grey darken-1">add_circle_outline</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-title class="grey--text text--darken-1">New room</v-list-tile-title>
+        </v-list-tile>
+      </v-list>
+
+      <v-dialog
+        v-model="dialog"
+        persistent
+        max-width="500px"
+        @click.stop
       >
-        <md-button
-          class="md-icon-button"
-          to="/"
-        >
-          <md-icon>chat</md-icon>
-        </md-button>
-        <span class="md-title">Chat</span>
-      </md-toolbar>
+        <v-card>
+          <v-card-title primary-title>Create new room</v-card-title>
+          <v-card-text>
+            <v-form
+              ref="form"
+              v-model="valid"
+              lazy-validation
+            >
+              <v-text-field
+                v-model="form.name"
+                :rules="[() => form.name.length > 0 || 'This field is required']"
+                required
+                type="text"
+                label="name"
+              />
+            </v-form>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn
+              flat
+              @click.stop="dialog = false"
+            >Cancel</v-btn>
+            <v-btn
+              :disabled="sending || !valid"
+              flat
+              color="primary"
+              @click.stop="submit"
+            >Create</v-btn>
+          </v-card-actions>
+          <v-progress-linear
+            v-if="sending"
+            :indeterminate="true"
+          />
+        </v-card>
+      </v-dialog>
 
-      <md-list>
-        <md-list-item @click="showPrompt">
-          <md-icon>add</md-icon>
-          <span class="md-list-item-text">New room</span>
-        </md-list-item>
-        <md-divider />
-        <md-list-item
-          v-for="room of rooms"
-          :key="room.id"
-          :to="`/rooms?id=${room.id}`"
-          :class="getItemClasses(room.id)"
-        >
-          <span class="md-list-item-text">{{ room.name }}</span>
-        </md-list-item>
-      </md-list>
 
-      <md-dialog-prompt
-        :md-active.sync="active"
-        v-model="value"
-        md-title="Create new room"
-        md-input-maxlength="30"
-        md-input-placeholder="Type room name..."
-        md-confirm-text="Create"
-        @md-confirm="confirm"
-      />
     </template>
 
-    <nuxt-child slot="content" />
+    <!-- <nuxt-child slot="content" /> -->
   </app>
 </template>
 
@@ -63,8 +91,16 @@ export default {
   },
   data () {
     return {
-      active: false,
-      value: null
+      form: {
+        name: ''
+      },
+      snackbar: {
+        active: false,
+        text: ''
+      },
+      valid: true,
+      sending: false,
+      dialog: false
     }
   },
   computed: {
@@ -82,16 +118,22 @@ export default {
         'md-selected': id === this.room.id
       } : null
     },
-    showPrompt () {
-      this.active = true
-    },
-    async confirm () {
-      if (!this.value) {
+    async submit () {
+      if (!this.$refs.form.validate()) {
         return
       }
-      const id = await this.createRoom({ name: this.value })
-      this.$router.push(`/rooms?id=${id}`)
-      this.value = ''
+      this.sending = true
+      try {
+        const id = await this.createRoom({ name: this.form.name })
+        this.$router.push(`/rooms?id=${id}`)
+        this.dialog = false
+        this.from.name = ''
+        this.snackbar.text = 'New room created.'
+      } catch (e) {
+        this.snackbar.text = e.message
+      }
+      this.snackbar.active = true
+      this.sending = false
     },
     ...mapActions({
       createRoom: 'room/createRoom'
@@ -101,12 +143,11 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.md-list {
-  flex: 1;
-  overflow-y: auto;
-  padding-bottom: 0;
-  .md-divider {
-    min-height: 1px;
-  }
+.progress-linear {
+  left: 0;
+  margin: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 </style>

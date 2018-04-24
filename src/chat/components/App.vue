@@ -11,6 +11,7 @@
     </v-navigation-drawer>
 
     <v-toolbar
+      v-if="!noToolbar"
       color="blue"
       dark
       dense
@@ -74,9 +75,7 @@
     </v-toolbar>
 
     <v-content>
-      <v-container fill-height>
-        <slot name="content" />
-      </v-container>
+      <slot name="content" />
     </v-content>
   </v-app>
 </template>
@@ -85,6 +84,12 @@
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 export default {
+  props: {
+    noToolbar: {
+      type: Boolean,
+      default: false
+    }
+  },
   data () {
     return {
       active: false
