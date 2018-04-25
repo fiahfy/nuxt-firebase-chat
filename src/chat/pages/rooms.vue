@@ -6,16 +6,6 @@
 
     <template slot="drawer">
       <v-list dense>
-        <v-subheader class="mt-3 grey--text text--darken-1">ROOMS</v-subheader>
-        <v-list>
-          <v-list-tile
-            v-for="room in rooms"
-            :key="room.id"
-            :to="`/rooms?id=${room.id}`"
-          >
-            <v-list-tile-title v-text="room.name" />
-          </v-list-tile>
-        </v-list>
         <v-list-tile
           class="mt-3"
           @click="dialog = true"
@@ -25,6 +15,18 @@
           </v-list-tile-action>
           <v-list-tile-title class="grey--text text--darken-1">New room</v-list-tile-title>
         </v-list-tile>
+        <v-subheader class="mt-3 grey--text text--darken-1">ROOMS</v-subheader>
+        <v-list>
+          <v-list-tile
+            v-for="room in rooms"
+            :key="room.id"
+            :to="`/rooms?id=${room.id}`"
+            :class="getListTileClasses(room.id)"
+            active-class=""
+          >
+            <v-list-tile-title v-text="room.name" />
+          </v-list-tile>
+        </v-list>
       </v-list>
 
       <v-dialog
@@ -69,11 +71,9 @@
           />
         </v-card>
       </v-dialog>
-
-
     </template>
 
-    <!-- <nuxt-child slot="content" /> -->
+    <nuxt-child slot="content" />
   </app>
 </template>
 
@@ -113,9 +113,9 @@ export default {
     })
   },
   methods: {
-    getItemClasses (id) {
+    getListTileClasses (id) {
       return this.room ? {
-        'md-selected': id === this.room.id
+        'primary--text': id === this.room.id
       } : null
     },
     async submit () {

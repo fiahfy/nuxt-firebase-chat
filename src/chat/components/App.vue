@@ -24,18 +24,13 @@
         @click.stop="active = !active"
       />
 
-      <v-btn
-        flat
-        icon
-        color="white"
-        class="mx-3"
-        @click="goTop()"
-      >
-        <v-icon>chat</v-icon>
-      </v-btn>
-
       <v-toolbar-title class="mr-5 align-center">
-        <span class="title">Chat</span>
+        <nuxt-link
+          to="/"
+          class="white--text"
+        >
+          <span class="title">Chat</span>
+        </nuxt-link>
       </v-toolbar-title>
 
       <v-spacer />
@@ -43,7 +38,7 @@
       <template v-if="isSignedIn">
         <v-btn
           flat
-          to="/rooms"
+          @click="goRoom"
         >Rooms</v-btn>
         <v-menu
           bottom
@@ -56,7 +51,7 @@
             <img
               v-if="user.photoUrl"
               :src="user.photoUrl"
-              alt="user.name"
+              :alt="user.name"
             >
             <v-icon v-else>account_circle</v-icon>
           </v-avatar>
@@ -107,8 +102,8 @@ export default {
     })
   },
   methods: {
-    goTop () {
-      this.$router.push('/')
+    goRoom () {
+      this.$router.push('/rooms')
     },
     async logout () {
       await this.signOut()
@@ -120,3 +115,9 @@ export default {
   }
 }
 </script>
+
+<style scoped lang="scss">
+.toolbar__title a {
+  text-decoration: none;
+}
+</style>
