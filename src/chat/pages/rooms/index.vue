@@ -3,41 +3,56 @@
     fluid
     fill-height
   >
-    <v-layout row>
-      <v-flex>
-        <template v-if="id">
-          <div
-            ref="messages"
-            class="messages"
-          >
-            <div class="message-filler" />
-            <div
+    <v-layout
+      column
+      fill-height
+    >
+      <template v-if="id">
+        <v-flex>
+          <v-layout column>
+            <v-spacer />
+            <v-flex
               v-if="loading"
               class="spinner"
             >
               <v-progress-circular indeterminate />
-            </div>
-            <message-list :messages="messages.slice().reverse()" />
-          </div>
-          <v-divider />
-          <div class="actions">
-            <!-- <md-field>
-              <md-textarea
-                v-model="message"
-                md-autogrow
-                placeholder="Message..."
-                @keydown="onKeydown"
-              />
-            </md-field> -->
-          </div>
-        </template>
-        <div v-else>
-          <!-- <md-empty-state
-            md-icon="chat"
-            md-label="Enter room"
-            md-description="Select a room you want to enter on the side menu."
-          /> -->
-        </div>
+            </v-flex>
+            <v-flex>
+              <v-card v-if="reversedMessages.length">
+                <message-list :messages="reversedMessages" />
+              </v-card>
+            </v-flex>
+          </v-layout>
+        </v-flex>
+        <v-flex>
+          <v-card>
+            <v-card-text>
+              <v-form
+                ref="form"
+                v-model="valid"
+                lazy-validation
+              >
+                <v-text-field
+                  v-model="form.message"
+                  :rules="[() => form.message.length > 0 || 'This field is required']"
+                  required
+                  type="text"
+                  label="Message"
+                  @keydown="onKeydown"
+                />
+              </v-form>
+            </v-card-text>
+          </v-card>
+        </v-flex>
+      </template>
+      <v-flex
+        v-else
+      >
+        <!-- <md-empty-state
+          md-icon="chat"
+          md-label="Enter room"
+          md-description="Select a room you want to enter on the side menu."
+        /> -->
       </v-flex>
     </v-layout>
   </v-container>
@@ -67,10 +82,17 @@ export default {
     return {
       loading: true,
       messages: [],
-      message: ''
+      form: {
+        message: ''
+      },
+      valid: true,
+      sending: false
     }
   },
   computed: {
+    reversedMessages () {
+      return this.messages.slice().reverse()
+    },
     ...mapState({
       id: state => state.room.id
     })
