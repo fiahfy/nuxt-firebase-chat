@@ -4,55 +4,56 @@
     fill-height
   >
     <v-layout
+      v-if="id"
       column
-      fill-height
     >
-      <template v-if="id">
-        <v-flex>
-          <v-layout column>
-            <v-spacer />
-            <v-flex
-              v-if="loading"
-              class="spinner"
-            >
-              <v-progress-circular indeterminate />
-            </v-flex>
-            <v-flex>
-              <v-card v-if="reversedMessages.length">
-                <message-list :messages="reversedMessages" />
-              </v-card>
-            </v-flex>
-          </v-layout>
-        </v-flex>
-        <v-flex>
-          <v-card>
-            <v-card-text>
-              <v-form
-                ref="form"
-                v-model="valid"
-                lazy-validation
-              >
-                <v-text-field
-                  v-model="form.message"
-                  :rules="[() => form.message.length > 0 || 'This field is required']"
-                  required
-                  type="text"
-                  label="Message"
-                  @keydown="onKeydown"
-                />
-              </v-form>
-            </v-card-text>
-          </v-card>
-        </v-flex>
-      </template>
-      <v-flex
-        v-else
+      <v-spacer />
+      <div
+        v-if="loading"
+        class="text-xs-center pa-3"
       >
-        <!-- <md-empty-state
-          md-icon="chat"
-          md-label="Enter room"
-          md-description="Select a room you want to enter on the side menu."
-        /> -->
+        <v-progress-circular
+          indeterminate
+          color="primary"
+        />
+      </div>
+      <v-card>
+        <template v-if="reversedMessages.length">
+          <message-list :messages="reversedMessages" />
+          <v-divider />
+        </template>
+        <v-card-text>
+          <v-form
+            ref="form"
+            v-model="valid"
+            lazy-validation
+          >
+            <v-text-field
+              v-model="form.message"
+              type="text"
+              label="Message"
+              multi-line
+              rows="1"
+              @keydown.native="onKeydown"
+            />
+          </v-form>
+        </v-card-text>
+      </v-card>
+    </v-layout>
+    <v-layout
+      v-else
+      align-center
+      justify-center
+    >
+      <v-flex>
+        <div class="text-xs-center">
+          <v-icon
+            size="160"
+            class="grey--text"
+          >chat</v-icon>
+          <p class="title">Enter room</p>
+          <p class="subheading">Select a room you want to enter on the side menu.</p>
+        </div>
       </v-flex>
     </v-layout>
   </v-container>
@@ -103,11 +104,7 @@ export default {
     },
     messages () {
       this.$nextTick(() => {
-        const el = this.$refs['messages']
-        if (!el) {
-          return
-        }
-        el.scrollTop = el.scrollHeight
+        scroll(0, document.body.scrollHeight)
       })
     }
   },
@@ -150,6 +147,7 @@ export default {
       })
     },
     async onKeydown (e) {
+      console.log(e)
       if (e.keyCode === 13 && !e.shiftKey) {
         e.preventDefault()
         e.stopPropagation()
@@ -170,29 +168,3 @@ export default {
   }
 }
 </script>
-
-<style scoped lang="scss">
-section {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  .messages {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    overflow-y: auto;
-    .message-filler {
-      flex-grow: 1;
-    }
-    .message {
-      margin: 15px;
-    }
-    .spinner {
-      margin: 0 auto;
-    }
-  }
-  .actions {
-    padding: 0 15px;
-  }
-}
-</style>
