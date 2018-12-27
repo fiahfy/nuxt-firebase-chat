@@ -1,31 +1,33 @@
 {
   "name": "chat",
-  "version": "1.0.0",
   "description": "Nuxt.js project",
-  "author": "fiahfy <d.fiahfy@gmail.com>",
-  "private": true,
-  "scripts": {
-    "dev": "nuxt",
-    "build": "nuxt build",
-    "start": "nuxt start",
-    "generate": "nuxt generate && rm -rf ../../public/chat/ && cp -r dist/ ../../public/chat/",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
-    "precommit": "npm run lint"
+  "version": "1.0.0",
+  "author": {
+    "name": "fiahfy",
+    "email": "d.fiahfy@gmail.com",
+    "url": "http://fiahfy.blogspot.com/"
   },
   "dependencies": {
     "@nuxtjs/dotenv": "^1.1.1",
-    "@nuxtjs/vuetify": "^0.4.1",
-    "firebase": "^4.12.1",
-    "node-sass": "^4.8.3",
-    "nuxt": "^1.0.0",
-    "sass-loader": "^6.0.7",
-    "vue-material": "^1.0.0-beta-7"
+    "@nuxtjs/vuetify": "^0.5.0",
+    "nuxt": "^2.3.4"
   },
   "devDependencies": {
-    "babel-eslint": "^8.2.1",
-    "eslint": "^4.15.0",
-    "eslint-friendly-formatter": "^3.0.0",
-    "eslint-loader": "^1.7.1",
-    "eslint-plugin-vue": "^4.0.0"
+    "eslint": "^5.6.1",
+    "eslint-config-prettier": "^3.1.0",
+    "eslint-plugin-prettier": "^3.0.0",
+    "eslint-plugin-vue": "^5.0.0-beta.3",
+    "node-sass": "^4.9.0",
+    "prettier": "^1.14.3",
+    "sass-loader": "^7.0.1"
+  },
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt",
+    "generate": "nuxt generate && rm -rf ../../public/chat/ && cp -r dist/ ../../public/chat/",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "precommit": "npm run lint",
+    "start": "nuxt start"
   }
 }
