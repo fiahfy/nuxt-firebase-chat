@@ -32,7 +32,7 @@
       <v-btn v-else flat to="/login">Sign in</v-btn>
     </v-toolbar>
 
-    <v-content> <slot name="content" /> </v-content>
+    <v-content class="fill-height"> <slot name="content" /> </v-content>
   </v-app>
 </template>
 

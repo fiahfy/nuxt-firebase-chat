@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid fill-height>
+  <v-container fluid fill-height scroll-y>
     <v-layout v-if="id" column>
       <v-spacer />
       <div v-if="loading" class="text-xs-center pa-3">
@@ -17,7 +17,7 @@
               label="Message"
               rows="1"
               auto-grow
-              @keydown.native="onKeydown"
+              @keydown="onKeydown"
             />
           </v-form>
         </v-card-text>
@@ -108,13 +108,12 @@ export default {
         .collection('messages')
         .orderBy('createdAt', 'desc')
         .onSnapshot(
-          {
-            includeMetadataChanges: true
-          },
           (snapshot) => {
             this.loading = false
+            console.log(snapshot)
+            console.log(snapshot.docChanges())
             this.messages = [
-              ...snapshot.docChanges.reduce((carry, change) => {
+              ...(snapshot.docs || snapshot.docChanges).reduce((carry, change) => {
                 switch (change.type) {
                   case 'added':
                     carry.push({
@@ -126,6 +125,12 @@ export default {
                     this.messages = this.messages.filter(
                       (message) => message.id !== change.doc.id
                     )
+                    break
+                  default:
+                    carry.push({
+                      id: change.id,
+                      ...change.data()
+                    })
                     break
                 }
                 return carry
@@ -139,12 +144,12 @@ export default {
       if (e.keyCode === 13 && !e.shiftKey) {
         e.preventDefault()
         e.stopPropagation()
-        if (!this.message.length) {
+        if (!this.form.message.length) {
           return
         }
         try {
-          await this.createMessage({ message: this.message })
-          this.message = ''
+          await this.createMessage({ message: this.form.message })
+          this.form.message = ''
         } catch (e) {
           throw e
         }
