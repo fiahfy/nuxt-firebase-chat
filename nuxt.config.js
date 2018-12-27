@@ -5,10 +5,15 @@ module.exports = {
   build: {},
 
   /*
+   ** Global CSS
+   */
+  css: ['~/assets/css/app.css'],
+
+  /*
    ** Headers of the page
    */
   head: {
-    title: 'Chat app',
+    title: 'Chat',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },

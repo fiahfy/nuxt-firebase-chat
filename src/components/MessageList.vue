@@ -1,5 +1,5 @@
 <template>
-  <v-list two-line class="message-list">
+  <v-list class="message-list" two-line>
     <template v-for="(message, index) of messages">
       <v-divider v-if="index !== 0" :key="index" inset />
       <message-list-tile :key="message.id" :message="message" />

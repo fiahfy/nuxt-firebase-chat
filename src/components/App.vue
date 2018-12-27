@@ -16,20 +16,20 @@
       <v-spacer />
 
       <template v-if="isSignedIn">
-        <v-btn flat @click="goRoom"> Rooms </v-btn>
+        <v-btn flat @click="onRoomsClick">Rooms</v-btn>
         <v-menu bottom left>
           <v-avatar slot="activator" size="32">
-            <img v-if="user.photoUrl" :src="user.photoUrl" :alt="user.name" />
+            <v-img v-if="user.photoUrl" :src="user.photoUrl" :alt="user.name" />
             <v-icon v-else>account_circle</v-icon>
           </v-avatar>
           <v-list>
-            <v-list-tile @click="logout">
+            <v-list-tile @click="onSignOutClick">
               <v-list-tile-title>Sign out</v-list-tile-title>
             </v-list-tile>
           </v-list>
         </v-menu>
       </template>
-      <v-btn v-else flat to="/login"> Sign in </v-btn>
+      <v-btn v-else flat to="/login">Sign in</v-btn>
     </v-toolbar>
 
     <v-content> <slot name="content" /> </v-content>
@@ -63,10 +63,10 @@ export default {
     })
   },
   methods: {
-    goRoom() {
+    onRoomsClick() {
       this.$router.push('/rooms')
     },
-    async logout() {
+    async onSignOutClick() {
       await this.signOut()
       this.$router.push('/login')
     },
@@ -78,7 +78,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.toolbar__title a {
+.v-toolbar__title a {
   text-decoration: none;
 }
 </style>

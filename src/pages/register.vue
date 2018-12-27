@@ -1,8 +1,8 @@
 <template>
   <app no-toolbar>
-    <v-container slot="content" fluid fill-height>
+    <v-container slot="content" fill-height>
       <v-layout align-center justify-center>
-        <v-flex xs12 sm8 md4>
+        <v-flex xs12 sm8 md6 lg4>
           <v-card>
             <v-card-title primary-title>Sign up to Chat</v-card-title>
             <v-card-text>
@@ -41,7 +41,7 @@
                 :disabled="sending || !valid"
                 block
                 color="primary"
-                @click="submit"
+                @click="onSubmit"
               >
                 Sign up
               </v-btn>
@@ -59,8 +59,12 @@
 
 <script>
 import { mapActions } from 'vuex'
+import App from '~/components/App'
 
 export default {
+  components: {
+    App
+  },
   data() {
     return {
       form: {
@@ -77,7 +81,7 @@ export default {
     }
   },
   methods: {
-    async submit() {
+    async onSubmit() {
       if (!this.$refs.form.validate()) {
         return
       }
@@ -99,7 +103,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.progress-linear {
+.v-progress-linear {
   left: 0;
   margin: 0;
   position: absolute;

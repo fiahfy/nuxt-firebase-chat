@@ -1,7 +1,7 @@
 <template>
-  <v-list-tile avatar class="message-list-tile">
+  <v-list-tile class="message-list-tile" avatar>
     <v-list-tile-avatar>
-      <img
+      <v-img
         v-if="message.senderPhotoUrl"
         :src="message.senderPhotoUrl"
         :alt="message.senderName"

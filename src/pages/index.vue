@@ -1,5 +1,5 @@
 <template>
-  <app> <v-container slot="content" fill-height> Top </v-container> </app>
+  <app><v-container slot="content" fill-height>Top</v-container></app>
 </template>
 
 <script>

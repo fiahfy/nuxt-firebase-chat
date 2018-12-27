@@ -46,12 +46,12 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn flat @click.stop="dialog = false"> Cancel </v-btn>
+            <v-btn flat @click.stop="dialog = false">Cancel</v-btn>
             <v-btn
               :disabled="sending || !valid"
               flat
               color="primary"
-              @click.stop="submit"
+              @click.stop="onSubmit"
             >
               Create
             </v-btn>
@@ -61,7 +61,11 @@
       </v-dialog>
     </template>
 
-    <nuxt-child slot="content" />
+    <div slot="content" class="fill-height">
+      <nuxt-child />
+
+      <v-snackbar v-model="snackbar.active">{{ snackbar.text }}</v-snackbar>
+    </div>
   </app>
 </template>
 
@@ -108,21 +112,22 @@ export default {
           }
         : null
     },
-    async submit() {
+    async onSubmit() {
       if (!this.$refs.form.validate()) {
         return
       }
       this.sending = true
       try {
         const id = await this.createRoom({ name: this.form.name })
-        this.$router.push(`/rooms?id=${id}`)
+        this.form.name = ''
         this.dialog = false
-        this.from.name = ''
         this.snackbar.text = 'New room created.'
+        this.snackbar.active = true
+        this.$router.push(`/rooms?id=${id}`)
       } catch (e) {
         this.snackbar.text = e.message
+        this.snackbar.active = true
       }
-      this.snackbar.active = true
       this.sending = false
     },
     ...mapActions({
@@ -133,7 +138,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.progress-linear {
+.v-progress-linear {
   left: 0;
   margin: 0;
   position: absolute;
