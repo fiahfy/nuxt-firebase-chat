@@ -1,9 +1,9 @@
 import Vue from 'vue'
-import Firebase from 'firebase'
+import Firebase from 'firebase/app'
 import 'firebase/firestore'
 
 const firebasePlugin = {
-  install () {
+  install() {
     const firebase = Firebase.initializeApp({
       apiKey: process.env.API_KEY,
       authDomain: process.env.AUTH_DOMAIN,
@@ -11,7 +11,9 @@ const firebasePlugin = {
       projectId: process.env.PROJECT_ID,
       storageBucket: process.env.STORAGE_BUCKET
     })
-    Vue.prototype.$db = firebase.firestore()
+    const firestore = firebase.firestore()
+    firestore.settings({ timestampsInSnapshots: true })
+    Vue.prototype.$db = firestore
     Vue.prototype.$auth = firebase.auth()
   }
 }

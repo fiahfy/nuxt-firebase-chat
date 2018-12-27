@@ -1,37 +1,26 @@
 <template>
   <app no-toolbar>
-    <v-container
-      slot="content"
-      fluid
-      fill-height
-    >
-      <v-layout
-        align-center
-        justify-center
-      >
-        <v-flex
-          xs12
-          sm8
-          md4
-        >
+    <v-container slot="content" fluid fill-height>
+      <v-layout align-center justify-center>
+        <v-flex xs12 sm8 md4>
           <v-card>
             <v-card-title primary-title>Sign in to Chat</v-card-title>
             <v-card-text>
-              <v-form
-                ref="form"
-                v-model="valid"
-                lazy-validation
-              >
+              <v-form ref="form" v-model="valid" lazy-validation>
                 <v-text-field
                   v-model="form.email"
-                  :rules="[() => form.email.length > 0 || 'This field is required']"
+                  :rules="[
+                    () => form.email.length > 0 || 'This field is required'
+                  ]"
                   required
                   type="email"
                   label="Email"
                 />
                 <v-text-field
                   v-model="form.password"
-                  :rules="[() => form.password.length > 0 || 'This field is required']"
+                  :rules="[
+                    () => form.password.length > 0 || 'This field is required'
+                  ]"
                   required
                   label="Password"
                   type="password"
@@ -47,21 +36,20 @@
                 block
                 color="primary"
                 @click="submit"
-              >Sign in</v-btn>
+              >
+                Sign in
+              </v-btn>
             </v-card-actions>
             <v-divider />
             <v-card-actions>
-              <v-btn
-                :disabled="sending"
-                block
-                @click="(e) => signIn('github')"
-              >Sign in with GitHub</v-btn>
+              <v-btn :disabled="sending" block @click="signIn">
+                Sign in with GitHub
+              </v-btn>
             </v-card-actions>
-            <v-progress-linear
-              v-if="sending"
-              :indeterminate="true"
-            />
-            <v-snackbar v-model="snackbar.active">{{ snackbar.text }}</v-snackbar>
+            <v-progress-linear v-if="sending" :indeterminate="true" />
+            <v-snackbar v-model="snackbar.active">
+              {{ snackbar.text }}
+            </v-snackbar>
           </v-card>
           <div class="description">
             <small>
@@ -83,7 +71,7 @@ export default {
   components: {
     App
   },
-  data () {
+  data() {
     return {
       form: {
         email: '',
@@ -98,7 +86,7 @@ export default {
     }
   },
   methods: {
-    async submit () {
+    async submit() {
       if (!this.$refs.form.validate()) {
         return
       }
@@ -112,7 +100,7 @@ export default {
         this.sending = false
       }
     },
-    async signIn (provider) {
+    async signIn() {
       this.sending = true
       try {
         await this.signInWithGithub()

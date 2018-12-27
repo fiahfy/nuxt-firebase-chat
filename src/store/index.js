@@ -5,31 +5,34 @@ export const state = () => ({
 })
 
 export const actions = {
-  async signUpWithEmailAndPassword ({ commit }, { email, password, username }) {
-    const user = await this.$auth.createUserWithEmailAndPassword(email, password)
+  async signUpWithEmailAndPassword({ commit }, { email, password, username }) {
+    const user = await this.$auth.createUserWithEmailAndPassword(
+      email,
+      password
+    )
     await user.updateProfile({ displayName: username })
     commit('setUsername', { username })
   },
-  async signInWithEmailAndPassword (_, { email, password }) {
+  async signInWithEmailAndPassword(_, { email, password }) {
     await this.$auth.signInWithEmailAndPassword(email, password)
   },
-  async signInWithGithub () {
+  async signInWithGithub() {
     const provider = new firebase.auth.GithubAuthProvider()
     await this.$auth.signInWithPopup(provider)
   },
-  async signOut () {
+  async signOut() {
     await this.$auth.signOut()
   },
-  async sendPasswordResetEmail (_, { email }) {
+  async sendPasswordResetEmail(_, { email }) {
     await this.$auth.sendPasswordResetEmail(email)
-  },
+  }
 }
 
 export const mutations = {
-  setUser (state, { user }) {
+  setUser(state, { user }) {
     state.user = user
   },
-  setUsername (state, { username }) {
+  setUsername(state, { username }) {
     if (!state.user) {
       return
     }
@@ -41,7 +44,7 @@ export const mutations = {
 }
 
 export const getters = {
-  isSignedIn (state) {
+  isSignedIn(state) {
     return !!state.user
   }
 }

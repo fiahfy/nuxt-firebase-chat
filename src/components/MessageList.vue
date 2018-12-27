@@ -1,18 +1,8 @@
 <template>
-  <v-list
-    two-line
-    class="message-list"
-  >
+  <v-list two-line class="message-list">
     <template v-for="(message, index) of messages">
-      <v-divider
-        v-if="index !== 0"
-        :key="index"
-        inset
-      />
-      <message-list-tile
-        :message="message"
-        :key="message.id"
-      />
+      <v-divider v-if="index !== 0" :key="index" inset />
+      <message-list-tile :key="message.id" :message="message" />
     </template>
   </v-list>
 </template>

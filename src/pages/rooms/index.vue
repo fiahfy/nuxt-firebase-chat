@@ -1,21 +1,9 @@
 <template>
-  <v-container
-    fluid
-    fill-height
-  >
-    <v-layout
-      v-if="id"
-      column
-    >
+  <v-container fluid fill-height>
+    <v-layout v-if="id" column>
       <v-spacer />
-      <div
-        v-if="loading"
-        class="text-xs-center pa-3"
-      >
-        <v-progress-circular
-          indeterminate
-          color="primary"
-        />
+      <div v-if="loading" class="text-xs-center pa-3">
+        <v-progress-circular indeterminate color="primary" />
       </div>
       <v-card>
         <template v-if="reversedMessages.length">
@@ -23,36 +11,26 @@
           <v-divider />
         </template>
         <v-card-text>
-          <v-form
-            ref="form"
-            v-model="valid"
-            lazy-validation
-          >
-            <v-text-field
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <v-textarea
               v-model="form.message"
-              type="text"
               label="Message"
-              multi-line
               rows="1"
+              auto-grow
               @keydown.native="onKeydown"
             />
           </v-form>
         </v-card-text>
       </v-card>
     </v-layout>
-    <v-layout
-      v-else
-      align-center
-      justify-center
-    >
+    <v-layout v-else align-center justify-center>
       <v-flex>
         <div class="text-xs-center">
-          <v-icon
-            size="160"
-            class="grey--text"
-          >chat</v-icon>
+          <v-icon size="160" class="grey--text"> chat </v-icon>
           <p class="title">Enter room</p>
-          <p class="subheading">Select a room you want to enter on the side menu.</p>
+          <p class="subheading">
+            Select a room you want to enter on the side menu.
+          </p>
         </div>
       </v-flex>
     </v-layout>
@@ -79,7 +57,7 @@ export default {
     }
     return store.commit('room/setId', { id })
   },
-  data () {
+  data() {
     return {
       loading: true,
       messages: [],
@@ -91,27 +69,27 @@ export default {
     }
   },
   computed: {
-    reversedMessages () {
+    reversedMessages() {
       return this.messages.slice().reverse()
     },
     ...mapState({
-      id: state => state.room.id
+      id: (state) => state.room.id
     })
   },
   watch: {
-    id () {
+    id() {
       this.load()
     },
-    messages () {
+    messages() {
       this.$nextTick(() => {
         scroll(0, document.body.scrollHeight)
       })
     }
   },
-  async mounted () {
+  async mounted() {
     await this.load()
   },
-  beforeDestroy () {
+  beforeDestroy() {
     if (this.unsubscribe) {
       this.unsubscribe()
     }
@@ -124,30 +102,40 @@ export default {
       if (!this.id) {
         return
       }
-      this.unsubscribe = this.$db.collection('rooms').doc(this.id).collection('messages').orderBy('createdAt', 'desc').onSnapshot({
-        includeDocumentMetadataChanges: true
-      }, (snapshot) => {
-        this.loading = false
-        this.messages = [
-          ...snapshot.docChanges.reduce((carry, change) => {
-            switch (change.type) {
-              case 'added':
-                carry.push({
-                  id: change.doc.id, ...change.doc.data()
-                })
-                break
-              case 'removed':
-                this.messages = this.messages.filter((message) => message.id !== change.doc.id)
-                break
-            }
-            return carry
-          }, []),
-          ...this.messages
-        ]
-      })
+      this.unsubscribe = this.$db
+        .collection('rooms')
+        .doc(this.id)
+        .collection('messages')
+        .orderBy('createdAt', 'desc')
+        .onSnapshot(
+          {
+            includeMetadataChanges: true
+          },
+          (snapshot) => {
+            this.loading = false
+            this.messages = [
+              ...snapshot.docChanges.reduce((carry, change) => {
+                switch (change.type) {
+                  case 'added':
+                    carry.push({
+                      id: change.doc.id,
+                      ...change.doc.data()
+                    })
+                    break
+                  case 'removed':
+                    this.messages = this.messages.filter(
+                      (message) => message.id !== change.doc.id
+                    )
+                    break
+                }
+                return carry
+              }, []),
+              ...this.messages
+            ]
+          }
+        )
     },
-    async onKeydown (e) {
-      console.log(e)
+    async onKeydown(e) {
       if (e.keyCode === 13 && !e.shiftKey) {
         e.preventDefault()
         e.stopPropagation()
