@@ -17,10 +17,10 @@
 
       <template v-if="isSignedIn">
         <v-btn flat @click="onRoomsClick">Rooms</v-btn>
-        <v-menu bottom left>
+        <v-menu offset-y>
           <v-avatar slot="activator" size="32">
             <v-img v-if="user.photoUrl" :src="user.photoUrl" :alt="user.name" />
-            <v-icon v-else>account_circle</v-icon>
+            <v-icon v-else size="32">account_circle</v-icon>
           </v-avatar>
           <v-list>
             <v-list-tile @click="onSignOutClick">

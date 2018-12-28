@@ -1,13 +1,13 @@
 <template>
-  <v-container fluid fill-height scroll-y>
+  <v-container fill-height fluid pa-0 scroll-y>
     <v-layout v-if="id" column>
       <v-spacer />
       <div v-if="loading" class="text-xs-center pa-3">
         <v-progress-circular indeterminate color="primary" />
       </div>
-      <v-card>
-        <template v-if="reversedMessages.length">
-          <message-list :messages="reversedMessages" />
+      <v-card class="ma-4">
+        <template v-if="messages.length">
+          <message-list :messages="messages | reverse" />
           <v-divider />
         </template>
         <v-card-text>
@@ -46,8 +46,8 @@ export default {
     MessageList
   },
   watchQuery: ['id'],
-  async fetch({ error, store, query }) {
-    const id = query.id
+  async fetch({ error, query, store }) {
+    const { id } = query
     if (!id) {
       return store.commit('room/setId', { id })
     }
@@ -57,21 +57,23 @@ export default {
     }
     return store.commit('room/setId', { id })
   },
+  filters: {
+    reverse(value) {
+      return value.slice().reverse()
+    }
+  },
   data() {
     return {
+      valid: true,
+      sending: false,
       loading: true,
       messages: [],
       form: {
         message: ''
-      },
-      valid: true,
-      sending: false
+      }
     }
   },
   computed: {
-    reversedMessages() {
-      return this.messages.slice().reverse()
-    },
     ...mapState({
       id: (state) => state.room.id
     })
@@ -82,12 +84,12 @@ export default {
     },
     messages() {
       this.$nextTick(() => {
-        scroll(0, document.body.scrollHeight)
+        this.$el.scrollTop = this.$el.scrollHeight
       })
     }
   },
-  async mounted() {
-    await this.load()
+  created() {
+    this.load()
   },
   beforeDestroy() {
     if (this.unsubscribe) {
@@ -95,50 +97,29 @@ export default {
     }
   },
   methods: {
-    async load() {
+    load() {
       if (this.unsubscribe) {
         this.unsubscribe()
       }
       if (!this.id) {
         return
       }
+      this.messages = []
+      this.loading = true
       this.unsubscribe = this.$db
         .collection('rooms')
         .doc(this.id)
         .collection('messages')
         .orderBy('createdAt', 'desc')
-        .onSnapshot(
-          (snapshot) => {
-            this.loading = false
-            console.log(snapshot)
-            console.log(snapshot.docChanges())
-            this.messages = [
-              ...(snapshot.docs || snapshot.docChanges).reduce((carry, change) => {
-                switch (change.type) {
-                  case 'added':
-                    carry.push({
-                      id: change.doc.id,
-                      ...change.doc.data()
-                    })
-                    break
-                  case 'removed':
-                    this.messages = this.messages.filter(
-                      (message) => message.id !== change.doc.id
-                    )
-                    break
-                  default:
-                    carry.push({
-                      id: change.id,
-                      ...change.data()
-                    })
-                    break
-                }
-                return carry
-              }, []),
-              ...this.messages
-            ]
-          }
-        )
+        .onSnapshot((snapshot) => {
+          this.loading = false
+          this.messages = snapshot.docs.map((doc) => {
+            return {
+              id: doc.id,
+              ...doc.data()
+            }
+          })
+        })
     },
     async onKeydown(e) {
       if (e.keyCode === 13 && !e.shiftKey) {

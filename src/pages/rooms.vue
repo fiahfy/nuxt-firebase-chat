@@ -83,16 +83,16 @@ export default {
   },
   data() {
     return {
+      valid: true,
+      sending: false,
+      dialog: false,
       form: {
         name: ''
       },
       snackbar: {
         active: false,
         text: ''
-      },
-      valid: true,
-      sending: false,
-      dialog: false
+      }
     }
   },
   computed: {

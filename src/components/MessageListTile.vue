@@ -6,7 +6,7 @@
         :src="message.senderPhotoUrl"
         :alt="message.senderName"
       />
-      <v-icon v-else>account_circle</v-icon>
+      <v-icon v-else size="40">account_circle</v-icon>
     </v-list-tile-avatar>
     <v-list-tile-content>
       <v-list-tile-title>

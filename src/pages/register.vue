@@ -67,6 +67,8 @@ export default {
   },
   data() {
     return {
+      valid: true,
+      sending: false,
       form: {
         username: '',
         email: '',
@@ -75,9 +77,7 @@ export default {
       snackbar: {
         active: false,
         text: ''
-      },
-      valid: true,
-      sending: false
+      }
     }
   },
   methods: {
