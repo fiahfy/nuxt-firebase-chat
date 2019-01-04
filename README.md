@@ -1,6 +1,6 @@
-# chat
+# firebase-sandbox
 
-> Nuxt.js project
+> Sandbox project on Firebase
 
 ## Build Setup
 

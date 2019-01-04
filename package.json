@@ -1,6 +1,6 @@
 {
-  "name": "chat",
-  "description": "Nuxt.js project",
+  "name": "firebase-sandbox",
+  "description": "Sandbox project on Firebase",
   "version": "1.0.0",
   "author": {
     "name": "fiahfy",
@@ -27,7 +27,7 @@
     "build": "nuxt build",
     "dev": "nuxt",
     "generate": "nuxt generate && rm -rf ../../public/chat/ && cp -r dist/ ../../public/chat/",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "lint": "eslint -f codeframe --ext .js,.vue --ignore-path .gitignore .",
     "precommit": "npm run lint",
     "start": "nuxt start"
   }

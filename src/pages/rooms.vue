@@ -1,148 +1,128 @@
 <template>
-  <app>
-    <template slot="title">
-      {{ title }}
-    </template>
-
-    <template slot="drawer">
-      <v-list dense>
-        <v-list-tile class="mt-3" @click="dialog = true">
-          <v-list-tile-action>
-            <v-icon color="grey darken-1">add_circle_outline</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-title class="grey--text text--darken-1">
-            New room
-          </v-list-tile-title>
-        </v-list-tile>
-        <v-subheader class="mt-3 grey--text text--darken-1">ROOMS</v-subheader>
-        <v-list>
-          <v-list-tile
-            v-for="room in rooms"
-            :key="room.id"
-            :to="`/rooms?id=${room.id}`"
-            :class="getListTileClasses(room.id)"
-            active-class=""
-          >
-            <v-list-tile-title v-text="room.name" />
-          </v-list-tile>
-        </v-list>
-      </v-list>
-
-      <v-dialog v-model="dialog" persistent max-width="500px" @click.stop>
-        <v-card>
-          <v-card-title primary-title>Create new room</v-card-title>
-          <v-card-text>
-            <v-form ref="form" v-model="valid" lazy-validation>
-              <v-text-field
-                v-model="form.name"
-                :rules="[
-                  () => form.name.length > 0 || 'This field is required'
-                ]"
-                required
-                type="text"
-                label="name"
-              />
-            </v-form>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn flat @click.stop="dialog = false">Cancel</v-btn>
-            <v-btn
-              :disabled="sending || !valid"
-              flat
-              color="primary"
-              @click.stop="onSubmit"
-            >
-              Create
-            </v-btn>
-          </v-card-actions>
-          <v-progress-linear v-if="sending" :indeterminate="true" />
-        </v-card>
-      </v-dialog>
-    </template>
-
-    <div slot="content" class="fill-height">
-      <nuxt-child />
-
-      <v-snackbar v-model="snackbar.active">{{ snackbar.text }}</v-snackbar>
-    </div>
-  </app>
+  <v-container fill-height fluid pa-0 scroll-y>
+    <v-layout v-if="id" column>
+      <v-spacer />
+      <div v-if="loading" class="text-xs-center pa-3">
+        <v-progress-circular indeterminate color="primary" />
+      </div>
+      <v-card class="ma-4">
+        <template v-if="messages.length">
+          <message-list :messages="messages | reverse" />
+          <v-divider />
+        </template>
+        <v-card-text>
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <v-textarea
+              v-model="form.message"
+              label="Message"
+              rows="1"
+              auto-grow
+              @keydown="onKeydown"
+            />
+          </v-form>
+        </v-card-text>
+      </v-card>
+    </v-layout>
+    <v-layout v-else align-center justify-center>
+      <v-flex>
+        <div class="text-xs-center">
+          <v-icon size="160" class="grey--text"> chat </v-icon>
+          <p class="title">Enter room</p>
+          <p class="subheading">
+            Select a room you want to enter on the side menu.
+          </p>
+        </div>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
-import App from '~/components/App'
+import { mapActions, mapGetters, mapState } from 'vuex'
+import MessageList from '~/components/MessageList.vue'
 
 export default {
   components: {
-    App
+    MessageList
   },
   middleware: ['authenticated'],
-  async fetch({ store }) {
-    await store.dispatch('room/fetchRooms')
+  watchQuery: ['id'],
+  async fetch({ error, query, store }) {
+    const { id } = query
+    if (!id) {
+      return store.commit('room/setId', { id })
+    }
+    const room = await store.dispatch('room/fetchRoom', { id })
+    if (!room) {
+      return error({ statusCode: 404, message: 'Room Not Found' })
+    }
+    return store.commit('room/setId', { id })
+  },
+  filters: {
+    reverse(value) {
+      return value.slice().reverse()
+    }
   },
   data() {
     return {
       valid: true,
       sending: false,
-      dialog: false,
+      loading: true,
       form: {
-        name: ''
-      },
-      snackbar: {
-        active: false,
-        text: ''
+        message: ''
       }
     }
   },
   computed: {
-    title() {
-      return this.room ? this.room.name : ''
+    ...mapState('room', ['id']),
+    ...mapGetters('room', ['messages'])
+  },
+  watch: {
+    id() {
+      this.load()
     },
-    ...mapGetters({
-      room: 'room/room',
-      rooms: 'room/rooms'
-    })
+    messages() {
+      this.loading = false
+      this.$nextTick(() => {
+        this.$el.scrollTop = this.$el.scrollHeight
+      })
+    }
+  },
+  created() {
+    this.load()
+  },
+  beforeDestroy() {
+    this.unsubscribeMessages()
   },
   methods: {
-    getListTileClasses(id) {
-      return this.room
-        ? {
-            'primary--text': id === this.room.id
-          }
-        : null
-    },
-    async onSubmit() {
-      if (!this.$refs.form.validate()) {
+    load() {
+      this.unsubscribeMessages()
+      if (!this.id) {
         return
       }
-      this.sending = true
-      try {
-        const id = await this.createRoom({ name: this.form.name })
-        this.form.name = ''
-        this.dialog = false
-        this.snackbar.text = 'New room created.'
-        this.snackbar.active = true
-        this.$router.push(`/rooms?id=${id}`)
-      } catch (e) {
-        this.snackbar.text = e.message
-        this.snackbar.active = true
-      }
-      this.sending = false
+      this.loading = true
+      this.subscribeMessages()
     },
-    ...mapActions({
-      createRoom: 'room/createRoom'
-    })
+    async onKeydown(e) {
+      if (e.keyCode === 13 && !e.shiftKey) {
+        e.preventDefault()
+        e.stopPropagation()
+        if (!this.form.message.length) {
+          return
+        }
+        try {
+          await this.createMessage({ message: this.form.message })
+          this.form.message = ''
+        } catch (e) {
+          throw e
+        }
+      }
+    },
+    ...mapActions('room', [
+      'subscribeMessages',
+      'unsubscribeMessages',
+      'createMessage'
+    ])
   }
 }
 </script>
-
-<style scoped lang="scss">
-.v-progress-linear {
-  left: 0;
-  margin: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-</style>

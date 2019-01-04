@@ -1,7 +1,9 @@
+let unsubscribe = null
+
 export const state = () => ({
   id: null,
   rooms: {},
-  messages: []
+  messages: {}
 })
 
 export const actions = {
@@ -18,26 +20,49 @@ export const actions = {
     return room
   },
   async fetchRooms({ commit }) {
-    const rooms = []
-    const snapshot = await this.$db
+    const query = await this.$db
       .collection('rooms')
       .orderBy('createdAt', 'asc')
       .get()
-    snapshot.forEach((doc) => {
-      rooms.push({ id: doc.id, ...doc.data() })
+    const rooms = query.docs.map((doc) => {
+      return { id: doc.id, ...doc.data() }
     })
     commit('setRooms', { rooms })
     return rooms
   },
   async createRoom({ commit }, { name }) {
-    const ref = await this.$db.collection('rooms').add({
+    const docRef = await this.$db.collection('rooms').add({
       name,
       createdAt: new Date()
     })
-    const doc = await ref.get()
+    const doc = await docRef.get()
     const room = { id: doc.id, ...doc.data() }
     commit('setRoom', { room })
     return room.id
+  },
+  subscribeMessages({ state, commit, dispatch }) {
+    dispatch('unsubscribeMessages')
+    commit('setMessages', { messages: [] })
+    unsubscribe = this.$db
+      .collection('rooms')
+      .doc(state.id)
+      .collection('messages')
+      .orderBy('createdAt', 'desc')
+      .onSnapshot((query) => {
+        const messages = query.docs.map((doc) => {
+          return {
+            id: doc.id,
+            ...doc.data()
+          }
+        })
+        commit('setMessages', { messages })
+      })
+  },
+  unsubscribeMessages() {
+    if (unsubscribe) {
+      unsubscribe()
+      unsubscribe = null
+    }
   },
   async createMessage({ state, rootState }, { message }) {
     if (!state.id || !rootState.user) {
@@ -70,9 +95,21 @@ export const mutations = {
   setRooms(state, { rooms }) {
     state.rooms = {
       ...rooms.reduce((carry, room) => {
-        carry[room.id] = room
-        return carry
-      }, state.rooms)
+        return {
+          ...carry,
+          [room.id]: room
+        }
+      }, {})
+    }
+  },
+  setMessages(state, { messages }) {
+    state.messages = {
+      ...messages.reduce((carry, message) => {
+        return {
+          ...carry,
+          [message.id]: message
+        }
+      }, {})
     }
   }
 }
@@ -83,6 +120,11 @@ export const getters = {
   },
   rooms(state) {
     return Object.values(state.rooms).sort((a, b) =>
+      a.createdAt > b.createdAt ? -1 : 1
+    )
+  },
+  messages(state) {
+    return Object.values(state.messages).sort((a, b) =>
       a.createdAt > b.createdAt ? -1 : 1
     )
   }

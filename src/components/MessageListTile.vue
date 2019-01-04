@@ -11,9 +11,10 @@
     <v-list-tile-content>
       <v-list-tile-title>
         {{ message.senderName }}
-        <span class="grey--text text--lighten-1">{{ datetime }}</span>
+        <small class="ml-1 grey--text">{{ datetime }}</small>
       </v-list-tile-title>
-      <v-list-tile-sub-title>{{ message.message }}</v-list-tile-sub-title>
+      <!-- eslint-disable-next-line vue/no-v-html -->
+      <v-list-tile-sub-title v-html="html" />
     </v-list-tile-content>
   </v-list-tile>
 </template>
@@ -28,13 +29,18 @@ export default {
   },
   computed: {
     datetime() {
-      const date = this.message.createdAt
+      const date = this.message.createdAt.toDate()
       if (!(date instanceof Date)) {
         return ''
       }
       return `${('00' + date.getHours()).slice(-2)}:${(
         '00' + date.getMinutes()
       ).slice(-2)}`
+    },
+    html() {
+      return this.message.message
+        .replace(/<[^>]+>/g, '')
+        .replace(/\n/g, '<br />')
     }
   }
 }
