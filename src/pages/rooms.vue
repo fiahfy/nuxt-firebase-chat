@@ -26,7 +26,7 @@
     <v-layout v-else align-center justify-center>
       <v-flex>
         <div class="text-xs-center">
-          <v-icon size="160" class="grey--text"> chat </v-icon>
+          <v-icon size="160" class="grey--text">chat</v-icon>
           <p class="title">Enter room</p>
           <p class="subheading">
             Select a room you want to enter on the side menu.

@@ -1,7 +1,7 @@
 <template>
   <v-navigation-drawer v-model="model" class="app-drawer" fixed clipped app>
     <v-list dense>
-      <v-subheader class="mt-3 grey--text text--darken-1">
+      <v-subheader class="grey--text text--darken-1">
         ROOMS
         <v-spacer />
         <v-btn
@@ -71,7 +71,7 @@ export default {
   },
   props: {
     value: {
-      type: Boolean,
+      type: null,
       required: true
     }
   },
@@ -103,7 +103,7 @@ export default {
     getListTileClasses(id) {
       return this.room
         ? {
-            'primary--text': id === this.room.id
+            'primary--text': this.$route.name === 'rooms' && id === this.room.id
           }
         : null
     },

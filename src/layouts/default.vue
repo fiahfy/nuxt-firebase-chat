@@ -1,11 +1,11 @@
 <template>
-  <v-app class="app">
-    <app-drawer v-model="active" />
+  <v-app>
+    <app-drawer v-model="drawer" />
 
-    <v-toolbar v-if="!noToolbar" color="blue" dark dense fixed clipped-left app>
-      <v-toolbar-side-icon @click="active = !active" />
+    <v-toolbar color="primary" dark dense fixed clipped-left app>
+      <v-toolbar-side-icon @click="drawer = !drawer" />
 
-      <v-toolbar-title class="mr-5 align-center">
+      <v-toolbar-title>
         <nuxt-link to="/" class="white--text">
           <span class="title">Chat</span>
         </nuxt-link>
@@ -43,15 +43,9 @@ export default {
   components: {
     AppDrawer
   },
-  props: {
-    noToolbar: {
-      type: Boolean,
-      default: false
-    }
-  },
   data() {
     return {
-      active: true
+      drawer: null
     }
   },
   computed: {

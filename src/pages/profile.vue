@@ -1,5 +1,5 @@
 <template>
-  <v-container fill-height>Settings</v-container>
+  <v-container fill-height>Profile</v-container>
 </template>
 
 <script>
