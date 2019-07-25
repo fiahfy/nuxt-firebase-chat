@@ -14,7 +14,6 @@ const firebasePlugin = {
     })
     Vue.prototype.$auth = app.auth()
     const firestore = app.firestore()
-    firestore.settings({ timestampsInSnapshots: true })
     Vue.prototype.$db = firestore
   }
 }
